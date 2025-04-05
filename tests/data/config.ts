@@ -1,16 +1,27 @@
 export const config = {
     // Environment URLs
     baseUrl: 'https://mailsubdomeny1.ast-stage-wobble.axence.net/',
+    apiUrl: 'https://api.ast-stage-wobble.axence.net/',  // if there's an API
 
     // Test Users
     credentials: {
         admin: {
-            username: process.env.ADMIN_USERNAME || 'mateusz.stasko@axence.net',
-            password: process.env.ADMIN_PASSWORD || '123123123123'
+            username: process.env.ADMIN_USERNAME || '',
+            password: process.env.ADMIN_PASSWORD || ''
         },
         enduser: {
             username: process.env.USER_USERNAME || '',
             password: process.env.USER_PASSWORD || ''
+        },
+        invalid: {
+            validEmailInvalidPass: {
+                username: process.env.ADMIN_USERNAME || '',  // Using same email as admin
+                password: process.env.INVALID_PASSWORD || ''
+            },
+            invalidEmail: {
+                username: process.env.INVALID_EMAIL || '',
+                password: process.env.RANDOM_PASSWORD || ''
+            }
         }
     },
 

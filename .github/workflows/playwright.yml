@@ -13,6 +13,10 @@ jobs:
     env:
       ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
       ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      VALID_EMAIL: ${{ secrets.VALID_EMAIL }}
+      INVALID_PASSWORD: ${{ secrets.INVALID_PASSWORD }}
+      INVALID_EMAIL: ${{ secrets.INVALID_EMAIL }}
+      RANDOM_PASSWORD: ${{ secrets.RANDOM_PASSWORD }}
 
     steps:
     - uses: actions/checkout@v4
