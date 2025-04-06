@@ -1,18 +1,23 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator, expect, APIRequestContext } from '@playwright/test';
 import { config } from '../data/config';
 
 export class BasePage {
     readonly page: Page;
+    readonly request: APIRequestContext;
 
     constructor(page: Page) {
         this.page = page;
+        this.request = page.request;
     }
 
     // Navigation with retry mechanism
     async goto(path: string, options = { retry: 3 }) {
         for (let attempt = 1; attempt <= options.retry; attempt++) {
             try {
-                await this.page.goto(path);
+                await this.page.goto(path, {
+                    waitUntil: 'networkidle',
+                    timeout: config.timeouts.medium
+                });
                 await this.page.waitForLoadState('networkidle');
                 return;
             } catch (error) {
@@ -54,16 +59,10 @@ export class BasePage {
 
     // API request wrapper with error handling
     async makeApiRequest(url: string, options = {}) {
-        try {
-            const response = await this.page.request.get(url, {
-                timeout: config.timeouts.medium,
-                ...options
-            });
-            return response;
-        } catch (error) {
-            console.error(`API request failed: ${error}`);
-            throw error;
-        }
+        return await this.request.get(url, {
+            timeout: config.timeouts.medium,
+            ...options
+        });
     }
 
     // Soft assertions wrapper

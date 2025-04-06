@@ -30,7 +30,11 @@ export default defineConfig({
         baseURL: config.baseUrl,
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
-        ignoreHTTPSErrors: true
+        ignoreHTTPSErrors: true,
+        actionTimeout: 10000,
+        navigationTimeout: 15000,
+        viewport: { width: 1280, height: 720 },
+        video: 'retain-on-failure'
     },
     projects: [
         {
@@ -39,6 +43,15 @@ export default defineConfig({
                 ...devices['Desktop Chrome'],
                 channel: 'chrome'
             }
+        },
+        {
+            name: 'mcp-chrome-auth',
+            use: {
+                ...devices['Desktop Chrome'],
+                channel: 'chrome',
+                storageState: './auth.json'
+            },
+            dependencies: ['mcp-chrome']
         },
         {
             name: 'firefox',
