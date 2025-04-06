@@ -1,5 +1,23 @@
 import { defineConfig, devices } from '@playwright/test';
 import { config } from './tests/data/config';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
+
+// Verify required environment variables
+const requiredEnvVars = [
+    'ADMIN_USERNAME',
+    'ADMIN_PASSWORD',
+    'INVALID_PASSWORD',
+    'INVALID_EMAIL',
+    'RANDOM_PASSWORD'
+];
+
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+if (missingEnvVars.length > 0) {
+    throw new Error(`Missing required environment variables: ${missingEnvVars.join(', ')}\nPlease set these variables in GitHub Secrets or your local .env file for development.`);
+}
 
 export default defineConfig({
     testDir: './tests',
