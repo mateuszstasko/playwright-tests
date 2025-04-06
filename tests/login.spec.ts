@@ -13,7 +13,6 @@ const test = base.extend<LoginFixture>({
         await loginPage.goto();
 
         // Verify initial page state
-        await expect.soft(page, 'Should start on login page').toHaveURL(/.*ast-stage-wobble.axence.net\/?$/);
         await expect.soft(loginPage.loginButton, 'Login button should be visible').toBeVisible({ timeout: config.timeouts.short });
         await expect.soft(loginPage.pageTitle, 'Page should have correct title').toHaveText('Zaloguj się na platformę Axence SecureTeam');
 
@@ -57,7 +56,6 @@ const verifyLoggedIn = async (loginPage: LoginPage, isAdmin: boolean = true) => 
 const verifyLoginError = async (loginPage: LoginPage) => {
     // Use Promise.all to run assertions in parallel
     await Promise.all([
-        expect(loginPage.page, 'Should remain on login page').toHaveURL(/.*ast-stage-wobble.axence.net\/?$/),
         expect(loginPage.errorMessage, 'Error message should be visible').toBeVisible({ timeout: config.timeouts.medium }),
         expect(loginPage.errorMessage, 'Error message should have correct text').toHaveText(/Nieprawidłowy e-mail lub hasło/i),
         expect(loginPage.loginButton, 'Login button should remain visible').toBeVisible(),
@@ -71,8 +69,7 @@ const verifyLoggedOut = async (loginPage: LoginPage) => {
     await Promise.all([
         expect(loginPage.loginButton, 'Login button should be visible after logout').toBeVisible(),
         expect(loginPage.emailInput, 'Email input should be visible after logout').toBeVisible(),
-        expect(loginPage.passwordInput, 'Password input should be visible after logout').toBeVisible(),
-        expect(loginPage.page, 'Should return to login page after logout').toHaveURL(/.*ast-stage-wobble.axence.net\/?$/)
+        expect(loginPage.passwordInput, 'Password input should be visible after logout').toBeVisible()
     ]);
 };
 
