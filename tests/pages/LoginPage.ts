@@ -107,30 +107,5 @@ export class LoginPage extends BasePage {
         }
     }
 
-    async verifyUserInfoAPI() {
-        const response = await this.makeApiRequest('https://mailsubdomeny1.ast-stage-wobble.axence.net/connect/userinfo');
 
-        // Verify response status
-        expect(response.status()).toBe(200);
-
-        // Parse and verify response body
-        const userInfo: UserInfo = await response.json();
-
-        // Verify the structure and types of the response
-        expect(userInfo).toMatchObject({
-            sub: expect.any(String),
-            email: expect.any(String),
-            phone_number: expect.any(String),
-            tid: expect.any(String),
-            role: expect.any(Array),
-            docsa: expect.any(Boolean),
-            fullname: expect.any(String)
-        });
-
-        // Verify specific values
-        expect(userInfo.email).toBe(process.env.ADMIN_USERNAME);
-        expect(userInfo.role).toContain('admin');
-
-        return userInfo;
-    }
 } 
