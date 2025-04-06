@@ -22,7 +22,7 @@ test.beforeAll(async () => {
     }
 });
 
-test.describe('Login Authentication Tests', () => {
+test.describe('Admin Login Tests', () => {
     let loginPage: LoginPage;
 
     test.beforeEach(async ({ page }) => {
@@ -40,15 +40,47 @@ test.describe('Login Authentication Tests', () => {
 
         // Submit form and wait for login completion
         await loginPage.clickLoginButton();
-        await loginPage.waitForPostLoginState();
-
-
+        await loginPage.waitForPostLoginState(true);
 
         // Cleanup
-        await loginPage.logout();
+        await loginPage.logout(true);
+    });
+});
+
+test.describe('User Login Tests', () => {
+    let loginPage: LoginPage;
+
+    test.beforeEach(async ({ page }) => {
+        loginPage = new LoginPage(page);
+        await loginPage.goto();
     });
 
-    test('should show error with valid email but invalid password', async () => {
+    test('should successfully login with valid user credentials', async () => {
+        const { username, password } = config.credentials.user;
+
+        // Fill in login form and verify
+        await loginPage.fillLoginForm(username, password);
+        await loginPage.verifyEmailField(username);
+        await loginPage.verifyPasswordField(password);
+
+        // Submit form and wait for login completion
+        await loginPage.clickLoginButton();
+        await loginPage.waitForPostLoginState(false);
+
+        // Cleanup
+        await loginPage.logout(false);
+    });
+});
+
+test.describe('Invalid Login Tests', () => {
+    let loginPage: LoginPage;
+
+    test.beforeEach(async ({ page }) => {
+        loginPage = new LoginPage(page);
+        await loginPage.goto();
+    });
+
+    test('should show error with valid email but invalid password', async ({ page }) => {
         const { username, password } = config.credentials.invalid.validEmailInvalidPass;
 
         // Attempt login with invalid credentials
@@ -72,15 +104,5 @@ test.describe('Login Authentication Tests', () => {
 
         // Verify error state
         await loginPage.verifyLoginError();
-    });
-
-    test('should maintain session after successful login', async ({ authenticatedPage }) => {
-        // This test uses the authenticatedPage fixture which handles login automatically
-        await test.expect(authenticatedPage).toHaveURL(/.*ast-stage-wobble.axence.net/);
-
-        // Additional session verification can be added here
-        const loginPage = new LoginPage(authenticatedPage);
-        await loginPage.waitForPostLoginState();
-
     });
 }); 

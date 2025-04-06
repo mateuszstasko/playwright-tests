@@ -7,6 +7,8 @@ dotenv.config();
 const requiredEnvVars = [
     'ADMIN_USERNAME',
     'ADMIN_PASSWORD',
+    'USER_USERNAME',
+    'USER_PASSWORD',
     'INVALID_PASSWORD',
     'INVALID_EMAIL',
     'RANDOM_PASSWORD'
@@ -24,9 +26,9 @@ interface Credentials {
 
 interface TestConfig {
     baseUrl: string;
-    apiUrl: string;
     credentials: {
         admin: Credentials;
+        user: Credentials;
         invalid: {
             validEmailInvalidPass: Credentials;
             invalidEmail: Credentials;
@@ -44,6 +46,8 @@ interface TestConfig {
 const env = {
     ADMIN_USERNAME: process.env.ADMIN_USERNAME!,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD!,
+    USER_USERNAME: process.env.USER_USERNAME!,
+    USER_PASSWORD: process.env.USER_PASSWORD!,
     INVALID_PASSWORD: process.env.INVALID_PASSWORD!,
     INVALID_EMAIL: process.env.INVALID_EMAIL!,
     RANDOM_PASSWORD: process.env.RANDOM_PASSWORD!,
@@ -52,6 +56,7 @@ const env = {
 // Log environment variables for debugging (excluding sensitive data)
 console.log('Environment variables loaded:', {
     ADMIN_USERNAME: env.ADMIN_USERNAME,
+    USER_USERNAME: env.USER_USERNAME,
     INVALID_EMAIL: env.INVALID_EMAIL,
     // Not logging passwords for security
 });
@@ -59,13 +64,16 @@ console.log('Environment variables loaded:', {
 export const config: TestConfig = {
     // Environment URLs
     baseUrl: 'https://mailsubdomeny1.ast-stage-wobble.axence.net/',
-    apiUrl: 'https://api.ast-stage-wobble.axence.net/',
 
     // Test Users
     credentials: {
         admin: {
             username: env.ADMIN_USERNAME,
             password: env.ADMIN_PASSWORD
+        },
+        user: {
+            username: env.USER_USERNAME,
+            password: env.USER_PASSWORD
         },
         invalid: {
             validEmailInvalidPass: {

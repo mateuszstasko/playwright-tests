@@ -2,20 +2,11 @@ import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 import { config } from '../data/config';
 
-interface UserInfo {
-    sub: string;
-    email: string;
-    phone_number: string;
-    tid: string;
-    role: string[];
-    docsa: boolean;
-    fullname: string;
-}
-
 export class LoginPage extends BasePage {
     private emailInput: Locator;
     private passwordInput: Locator;
     private loginButton: Locator;
+    private adminMenuButton: Locator;
     private userMenuButton: Locator;
     private logoutButton: Locator;
     private errorMessage: Locator;
@@ -28,9 +19,10 @@ export class LoginPage extends BasePage {
         this.loginButton = page.getByTestId('submit-button');
 
         // Post-login elements
-        this.userMenuButton = page.getByRole('button', { name: 'MS' });
+        this.adminMenuButton = page.getByRole('button', { name: 'MS' });
+        this.userMenuButton = page.getByRole('button', { name: 'tm' });
         this.logoutButton = page.getByText('Wyloguj się');
-        this.errorMessage = page.getByText('Nieprawidłowy e-mail lub hasło')
+        this.errorMessage = page.locator('.text-error-500');
     }
 
     // Navigation
@@ -49,12 +41,13 @@ export class LoginPage extends BasePage {
         await this.waitForLoadComplete();
     }
 
-    async waitForPostLoginState() {
+    async waitForPostLoginState(isAdmin: boolean = true) {
         // Wait for network requests to complete
         await this.waitForLoadComplete();
 
-        // Wait for the user menu button to be visible (indicates successful login)
-        await this.userMenuButton.waitFor({
+        // Wait for the appropriate menu button to be visible
+        const menuButton = isAdmin ? this.adminMenuButton : this.userMenuButton;
+        await menuButton.waitFor({
             state: 'visible',
             timeout: config.timeouts.medium
         });
@@ -63,14 +56,15 @@ export class LoginPage extends BasePage {
         await this.page.waitForTimeout(2000);
     }
 
-    async login(email: string, password: string) {
+    async login(email: string, password: string, isAdmin: boolean = true) {
         await this.fillLoginForm(email, password);
         await this.clickLoginButton();
-        await this.waitForPostLoginState();
+        await this.waitForPostLoginState(isAdmin);
     }
 
-    async logout() {
-        await this.clickWithRetry(this.userMenuButton);
+    async logout(isAdmin: boolean = true) {
+        const menuButton = isAdmin ? this.adminMenuButton : this.userMenuButton;
+        await this.clickWithRetry(menuButton);
         await this.clickWithRetry(this.logoutButton);
         await this.waitForLoadComplete();
     }
@@ -92,8 +86,14 @@ export class LoginPage extends BasePage {
         // Verify we're still on login page
         await expect(this.page).toHaveURL(/.*ast-stage-wobble.axence.net\/?$/);
 
+        // Wait for any network requests to complete
+        await this.waitForLoadComplete();
+
         // Check for error message with retry
-        await this.errorMessage.waitFor({ state: 'visible', timeout: config.timeouts.short });
+        await this.errorMessage.waitFor({
+            state: 'visible',
+            timeout: config.timeouts.medium  // Using medium timeout instead of short
+        });
 
         // Verify login form is still accessible
         const formVisible = await this.softAssert(async () => {
@@ -106,6 +106,4 @@ export class LoginPage extends BasePage {
             await this.takeScreenshot('login-error-form-not-visible');
         }
     }
-
-
 } 

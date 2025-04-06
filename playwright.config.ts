@@ -36,12 +36,7 @@ export default defineConfig({
     projects: [
         {
             name: 'mcp-chrome',
-            use: {
-                ...devices['Desktop Chrome'],
-                launchOptions: {
-                    args: ['--remote-debugging-port=9222']
-                }
-            },
+            use: { ...devices['Desktop Chrome'] }
         },
         {
             name: 'firefox',
