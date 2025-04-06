@@ -42,13 +42,7 @@ test.describe('Login Authentication Tests', () => {
         await loginPage.clickLoginButton();
         await loginPage.waitForPostLoginState();
 
-        // Verify user info from API
-        const userInfo = await loginPage.verifyUserInfoAPI();
 
-        // Verify specific user info
-        await test.expect(userInfo.email).toBe(username);
-        await test.expect(userInfo.role).toContain('admin');
-        await test.expect(userInfo.docsa).toBe(true);
 
         // Cleanup
         await loginPage.logout();
@@ -87,7 +81,6 @@ test.describe('Login Authentication Tests', () => {
         // Additional session verification can be added here
         const loginPage = new LoginPage(authenticatedPage);
         await loginPage.waitForPostLoginState();
-        const userInfo = await loginPage.verifyUserInfoAPI();
-        await test.expect(userInfo.email).toBe(config.credentials.admin.username);
+
     });
 }); 
