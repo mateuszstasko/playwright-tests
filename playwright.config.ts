@@ -30,13 +30,15 @@ export default defineConfig({
         baseURL: config.baseUrl,
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
-        ignoreHTTPSErrors: true,
-        channel: 'chrome'
+        ignoreHTTPSErrors: true
     },
     projects: [
         {
             name: 'mcp-chrome',
-            use: { ...devices['Desktop Chrome'] }
+            use: {
+                ...devices['Desktop Chrome'],
+                channel: 'chrome'
+            }
         },
         {
             name: 'firefox',
